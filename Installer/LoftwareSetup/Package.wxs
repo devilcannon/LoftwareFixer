@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Define the variables in "$(var.*) expressions" -->
+<?define Name = "LoftwareService" ?>
+<?define Manufacturer = "Jabil" ?>
+<?define Version = "1.0.0.0" ?>
+<?define UpgradeCode = "ae0b26d1-a0a6-450d-bb34-564c5508d7cd" ?>
+<?define TargetDir = "C:\Users\1400245\source\repos\LoftwareFixer\bin\Release\net6.0\win-x64\"?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="$(Name)"
+           Manufacturer="$(Manufacturer)"
+           Version="$(Version)"
+           UpgradeCode="$(var.UpgradeCode)"
+           Compressed="true">
+
+    <!-- Allow upgrades and prevent downgrades -->
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+
+    <!-- Define the directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+
+        <!-- Create a folder inside program files -->
+        <Directory Id="ROOTDIRECTORY" Name="$(var.Manufacturer)">
+
+          <!-- Create a folder within the parent folder given the name -->
+          <Directory Id="INSTALLFOLDER" Name="$(Name)" />
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <!-- The files inside this DirectoryRef are linked to
+             the App.WindowsService directory via INSTALLFOLDER -->
+    <DirectoryRef Id="INSTALLFOLDER">
+
+      <!-- Create a single component which is the App.WindowsService.exe file -->
+      <Component Id="ServiceExecutable" Bitness="always64">
+
+        <!-- Copies the App.WindowsService.exe file using the
+                     project reference preprocessor variables -->
+        <File Id="LoftwareFixer.exe"
+              Source="$(var.TargetDir)publish\LoftwareFixer.exe"
+              KeyPath="true" />
+
+        <!-- Remove all files from the INSTALLFOLDER on uninstall -->
+        <RemoveFile Id="ALLFILES" Name="*.*" On="both" />
+
+        <!-- Tell WiX to install the Service -->
+        <ServiceInstall Id="ServiceInstaller"
+                        Type="ownProcess"
+                        Name="LoftwareFixer"
+                        DisplayName="$(Name)"
+                        Description="A loftware service to remove trash-files"
+                        Start="auto"
+                        ErrorControl="normal" />
+
+        <!-- Tell WiX to start the Service -->
+        <ServiceControl Id="StartService"
+                        Start="install"
+                        Stop="both"
+                        Remove="uninstall"
+                        Name="LoftwareFixer"
+                        Wait="true" />
+      </Component>
+    </DirectoryRef>
+
+    <!-- Tell WiX to install the files -->
+    <Feature Id="Service" Title="App.WindowsService Setup" Level="1">
+      <ComponentRef Id="ServiceExecutable" />
+    </Feature>
+
+  </Package>
+</Wix>

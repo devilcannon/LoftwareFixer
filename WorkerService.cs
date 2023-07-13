@@ -5,7 +5,7 @@ namespace LoftwareFixer
         private readonly ILogger<WorkerService> _logger;
         private string[]? _validFiles;
         private int _workerDelay;
-        private readonly string _folderPath = @"C:\\Users\\Public\\LoftwareFixer";
+        private string _folderPath = @"C:\\Users\\Public\\LoftwareFixer";
 
         public WorkerService(ILogger<WorkerService> logger)
         {
@@ -20,6 +20,7 @@ namespace LoftwareFixer
             //Type of files
             _validFiles = setting.AllowedFileType;
             _workerDelay = setting.DelayTime;
+            _folderPath = setting.Path ?? @"C:\\Users\\Public\\LoftwareFixer";
             _logger.LogInformation("Config file loaded correctly");
         }
 

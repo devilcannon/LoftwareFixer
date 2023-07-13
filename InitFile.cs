@@ -5,10 +5,8 @@ namespace LoftwareFixer
     public static class InitFile
     {
         // A function that takes a JSON string and a folder name and saves the file in a subfolder
-        private static void SaveFile(string folderPath)
+        private static void SaveFile(string filePath)
         {
-            // Create the file path
-            string filePath = GetPath(folderPath);
 
             // Parse the object to string
             string jsonString = JsonSerializer.Serialize(GetDefault());
@@ -51,6 +49,7 @@ namespace LoftwareFixer
             return new Setting
             {
                 DelayTime = 5000,
+                Path = "C:\\Users\\Public\\",
                 AllowedFileType = new string[] { ".pass" }
             };
         }
@@ -67,5 +66,6 @@ namespace LoftwareFixer
     {
         public string[]? AllowedFileType { set; get; }
         public int DelayTime { set; get; }
+        public string? Path { set; get; }
     }
 }
